@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+    <div id="test-promise-log"></div>
+</body>
+</html>
+<script type="text/javascript">
+    function test(resolve, reject) {
+        var timeOut = Math.random() * 2;
+        log('set timeout to: ' + timeOut + ' seconds.');
+        // 生成一个0-2之间的随机数，如果小于1，则等待一段时间后返回成功，否则返回失败
+        setTimeout(function () {
+            if (timeOut < 1) {
+                log('call resolve()...');
+                resolve('200 OK');
+            } else {
+                log('call reject()...');
+                reject('timeout in ' + timeOut + ' seconds.');
+            }
+        }, timeOut * 1000);
+    }
+    // 清除log:
+    var logging = document.getElementById('test-promise-log');
+    while (logging.children.length > 1) {
+        logging.removeChild(logging.children[logging.children.length - 1]);
+    }
+
+    // 输出log到页面:
+    function log(s) {
+        var p = document.createElement('p');
+        p.innerHTML = s;
+        logging.appendChild(p);
+    } 
+
+    // new Promise(test).then(function (result) {
+    //     log('成功：' + result);
+    // }).catch(function (reason) {
+    //     log('失败：' + reason);
+    // });
+
+    // new Promise(function (resolve, reject) {
+    //     log('start new Promise...');
+    //     var timeOut = Math.random() * 2;
+    //     log('set timeout to: ' + timeOut + ' seconds.');
+    //     setTimeout(function () {
+    //         if (timeOut < 1) {
+    //             log('call resolve()...');
+    //             resolve('200 OK');
+    //         }
+    //         else {
+    //             log('call reject()...');
+    //             reject('timeout in ' + timeOut + ' seconds.');
+    //         }
+    //     }, timeOut * 1000);
+    // }).then(function (r) {
+    //     log('Done: ' + r);
+    // }).catch(function (reason) {
+    //     log('Failed: ' + reason);
+    // });
+
+    // 0.5秒后返回input*input的计算结果:
+    function multiply(input) {
+        return new Promise(function (resolve, reject) {
+            log('calculating ' + input + ' x ' + input + '...');
+            setTimeout(resolve, 500, input * input);
+        });
+    }
+
+    // 0.5秒后返回input+input的计算结果:
+    function add(input) {
+        return new Promise(function (resolve, reject) {
+            log('calculating ' + input + ' + ' + input + '...');
+            setTimeout(resolve, 500, input + input);
+        });
+    }
+
+    var p = new Promise(function (resolve, reject) {
+        log('start new Promise...');
+        resolve(123);
+    });
+
+    p.then(multiply)
+     .then(add)
+     .then(multiply)
+     .then(add)
+     .then(function (result) {
+        log('Got value: ' + result);
+    });
+
+</script>
